@@ -31,15 +31,6 @@ func TestSplice(t *testing.T) {
 	}
 }
 
-func TestCopy(t *testing.T) {
-	expected := Array{1, 2, 3}
-	actual := Array{1, 2, 3}.Copy()
-
-	if !isEq(actual, expected) {
-		throwErr(t, "Copy works not correct", expected, actual)
-	}
-}
-
 func TestEvery(t *testing.T) {
 	expected := true
 	actual := Array{1, 3, 5}.Every(isEven);
@@ -92,6 +83,18 @@ func TestPop(t *testing.T) {
 
 	if !isEq(actual, expected) {
 		throwErr(t, "Pop works not correct", expected, actual)
+	}
+}
+
+func TestShift(t *testing.T) {
+	expected := Array{2, 3}
+	arr := Array{1, 2, 3}
+	arr.Shift()
+
+	actual := arr
+
+	if !isEq(actual, expected) {
+		throwErr(t, "Shift works not correct", expected, actual)
 	}
 }
 

@@ -1,6 +1,5 @@
 package Array
 
-type Any = interface {}
 type Array []Any
 
 func (this Array) Slice(start int, end int) Array {
@@ -19,10 +18,8 @@ func (this *Array) Splice(start int, count int) Array {
 }
 
 func (this Array) Every(callback func(item Any, index int, link Array) bool) bool {
-	tmp := this.Copy()
-
-	for idx, item := range tmp {
-		if !callback(item, idx, tmp) {
+	for idx, item := range this {
+		if !callback(item, idx, this) {
 			return false
 		}
 	}
@@ -31,10 +28,8 @@ func (this Array) Every(callback func(item Any, index int, link Array) bool) boo
 }
 
 func (this Array) Some(callback func(item Any, index int, link Array) bool) bool {
-	tmp := this.Copy()
-
-	for idx, item := range tmp {
-		if callback(item, idx, tmp) {
+	for idx, item := range this {
+		if callback(item, idx, this) {
 			return true
 		}
 	}
@@ -44,13 +39,11 @@ func (this Array) Some(callback func(item Any, index int, link Array) bool) bool
 
 
 func (this Array) Map(callback func(item Any, index int, link Array) Any) Array {
-	tmp := this.Copy()
-
-	for idx, item := range tmp {
-		tmp[idx] = callback(item, idx, tmp)
+	for idx, item := range this {
+		this[idx] = callback(item, idx, this)
 	}
 
-	return tmp
+	return this
 }
 
 func (this *Array) Push(item ...Any) Any {
@@ -63,23 +56,31 @@ func (this *Array) Push(item ...Any) Any {
 func (this *Array) Pop() Any {
 	arr := *this
 
-	length := len(arr) -1
+	length := len(arr) - 1
 	*this = arr[:length]
 	return length
 }
 
-func (this Array) Copy() Array {
-	return append(Array{}, this...)
+func (this *Array) Shift() Any {
+	arr := *this
+
+	*this = append(Array{}, arr[1:]...)
+	return len(*this)
+}
+
+func (this *Array) Unshift(item ...Any) Any {
+	item = append(item, *this...)
+
+	*this = append(Array{}, item...)
+	return len(*this)
 }
 
 func (this Array) Reduce(callback func(prev Any, cur Any, idx int, link Array) Any, init Any) Any {
-	tmp := this.Copy()
-
 	result := init
 	prev := init
 
-	for idx, item := range tmp {
-		result = callback(prev, item, idx, tmp)
+	for idx, item := range this {
+		result = callback(prev, item, idx, this)
 		prev = result
 	}
 
@@ -87,8 +88,7 @@ func (this Array) Reduce(callback func(prev Any, cur Any, idx int, link Array) A
 }
 
 func (this Array) Reverse() Array {
-	tmp := this.Copy()
-	length := len(tmp)
+	length := len(this)
 
 	offset := 0
 
@@ -96,20 +96,18 @@ func (this Array) Reverse() Array {
 		l := offset
 		r := length - 1 - offset
 
-		tmp[l], tmp[r] = tmp[r], tmp[l]
+		this[l], this[r] = this[r], this[l]
 	}
 
-	return tmp
+	return this
 }
 
 func (this Array) ReduceRight(callback func(prev Any, cur Any, idx int, link Array) Any, init Any) Any {
-	tmp := this.Reverse()
-
 	result := init
 	prev := init
 
-	for idx, item := range tmp {
-		result = callback(prev, item, idx, tmp)
+	for idx, item := range this.Reverse() {
+		result = callback(prev, item, idx, this)
 		prev = result
 	}
 
@@ -117,21 +115,17 @@ func (this Array) ReduceRight(callback func(prev Any, cur Any, idx int, link Arr
 }
 
 func (this Array) Filter(callback func(item Any, index int, link Array) bool) Array {
-	tmp := this.Copy()
-
-	for idx, item := range tmp {
-		expr := callback(item, idx, tmp)
-		if !expr {
-			tmp.Splice(idx, 1)
+	for idx, item := range this {
+		if !callback(item, idx, this) {
+			this.Splice(idx, 1)
 		}
 	}
 
-	return tmp
+	return this
 }
 
 func (this Array) ForEach(callback func(item Any, index int, link Array)) {
-	tmp := this.Copy()
-	for idx, item := range tmp {
-		callback(item, idx, tmp)
+	for idx, item := range this {
+		callback(item, idx, this)
 	}
 }

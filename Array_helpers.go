@@ -3,6 +3,9 @@ package Array
 import "fmt"
 import "testing"
 
+// Any Type
+type Any = interface {}
+
 // Helper for format strings
 func format(str string, args ...Any) string {
 	return fmt.Sprintf(str, args...)
