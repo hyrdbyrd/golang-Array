@@ -24,7 +24,7 @@ func isEq(f Array, s Array) bool {
 }
 
 // Helper-Value for get stringified type
-const StringType string = "Array.Array"
+const stringType string = "Array.Array"
 
 // Helper for get stringified type
 func getType(arg Any) string {
